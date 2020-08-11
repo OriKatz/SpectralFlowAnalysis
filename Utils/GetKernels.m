@@ -12,8 +12,6 @@ if isscalar(NormFac)
             Scale1=min([Scale1,Scale2]);Scale2=Scale1;
         case 'Mean'
             Scale1=(Scale1+Scale2)/2;Scale2=Scale1;
-            % eps1=sqrt(eps1*eps2);
-            % eps1=sqrt(eps1^2+eps2^2)'
     end
 else
     Scale1=median(D1(:))*NormFac(1);
@@ -21,26 +19,23 @@ else
 end
 
 
-
 if any(NormFac>0)
-    A1=exp(-D1.^2/(Scale1^2));%tmp=sum(A1,2); K1=diag(1./tmp)*A1;
-    K1 = sinkhornKnopp(A1);
-    A2=exp(-D2.^2/(Scale2^2));%tmp=sum(A2,2); K2=diag(1./tmp)*A2;
-    K2 = sinkhornKnopp(A2);
+    A1=exp(-D1.^2/(Scale1^2));
+    A2=exp(-D2.^2/(Scale2^2));
 else
     if isscalar(NormFac)
         [A1,~]=AffinityFromDistance( D1, abs(NormFac));% [A1] = SuppressDiagonal(A1);
-        K1=sinkhornKnopp(A1);K1=K1^1;
-        
         [A2,~]=AffinityFromDistance( D2,abs(NormFac));% [A2] = SuppressDiagonal(A2);
-        K2=sinkhornKnopp(A2);K2=K2^1;
     else
         [A1,~]=AffinityFromDistance( D1, abs(NormFac(1)));% [A1] = SuppressDiagonal(A1);
-        K1=sinkhornKnopp(A1);K1=K1^1;
-        
         [A2,~]=AffinityFromDistance( D2,abs(NormFac(2)));% [A2] = SuppressDiagonal(A2);
-        K2=sinkhornKnopp(A2);K2=K2^1;
     end
 end
+% K1 = sinkhornKnopp(A1);
+% K2 = sinkhornKnopp(A2);
+[ColumnStochasticK1,K1] =SingleIterationNorm(A1,1);
+[ColumnStochasticK2,K2] =SingleIterationNorm(A2,1);
+
+
 
 
